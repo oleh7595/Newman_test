@@ -1,0 +1,2234 @@
+{
+	"info": {
+		"_postman_id": "c9e9198b-1ed4-403a-9887-a3cab0741a12",
+		"name": "API Test Jonin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Stage 1 (before Link Zen Wifi) Copy",
+			"item": [
+				{
+					"name": "Create/Update Test Groups as ZenAdmin",
+					"item": [
+						{
+							"name": "01. Get token",
+							"item": [
+								{
+									"name": "01. Login as Admin (200) copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "1a201f99-99e3-496f-84d3-25eda347cc05",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"",
+													"tests[\"Body matches string\"] = responseBody.has(\"data\");",
+													"tests[\"Body matches string1\"] = responseBody.has(\"email\");",
+													"tests[\"Body matches string2\"] = responseBody.has(\"title\");",
+													"tests[\"Body matches string3\"] = responseBody.has(\"role\");",
+													"tests[\"Body matches string4\"] = responseBody.has(\"token\");",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"token\", jsonData.data.token);",
+													"postman.setEnvironmentVariable(\"Earth_id\", jsonData.data.group);",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"email\": \"oleh.bavshyn+Admin@gmail.com\",\r\n  \"password\": \"Aa!11111\"\r\n}"
+										},
+										"url": {
+											"raw": "{{url}}/login",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"login"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Create Organization",
+							"item": [
+								{
+									"name": "Get Earth Group id",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "7a275f07-38a9-48e1-82c3-0635e8dbb7a9",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"//var jsonData = JSON.parse(responseBody);",
+													"//postman.setEnvironmentVariable(\"Earth_id\", jsonData.data.id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url}}/group/{{Earth_id}}",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group",
+												"{{Earth_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get group activity (200) copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ffc3dcfb-8c62-430a-8f0f-2ad3ddae705f",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id\", jsonData.data[0].id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create Organization (201)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "107d6896-83f9-443d-a94c-b122238623b4",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 201\"] = responseCode.code === 201;",
+													"",
+													"tests[\"Body matches id\"] = responseBody.has(\"id\");",
+													"",
+													"tests[\"Body matches title\"] = responseBody.has(\"title\");",
+													"",
+													"tests[\"Body matches createdAt\"] = responseBody.has(\"createdAt\");",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"Org_id\", jsonData.data.id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n\"data\": \r\n{\r\n\"parentId\": \"{{Earth_id}}\",\r\n\"title\": \"Test Organization Oleh\"\r\n},\r\n\"hubs\": []\r\n}\r\n"
+										},
+										"url": {
+											"raw": "{{url}}/group",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get group activity (200) verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "f554fe9b-9d0f-4415-81aa-0244e75eb674",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id+1\", jsonData.data[0].id);",
+													"tests[\"action\"] = jsonData.data[0].action === \"create\"",
+													"tests[\"source\"] = jsonData.data[0].source === \"admin@zenforenterprise.com\"",
+													"tests[\"title\"] = jsonData.data[0].title === \"Test Organization Oleh\"",
+													"tests[\"id\"] = jsonData.data[0].externalId === pm.environment.get(\"Org_id\")",
+													"",
+													"",
+													"",
+													"var data1 = parseInt(pm.environment.get(\"last_action_id\"));",
+													"var data3 = data1 + 1;",
+													"var data2 = parseInt(pm.environment.get(\"last_action_id+1\"));",
+													"console.log (data1);",
+													"console.log (data3);",
+													"console.log (data2);",
+													"//if (data2 == data3)",
+													"//console.log('success');",
+													"tests[\"OK\"] = data2 == data3;",
+													"//else",
+													"//console.log('error');"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get  Org info verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "0604997d-ddf7-42f6-86b8-60e387ae0069",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"tests[\"parentId\"] = jsonData.data.parentId === pm.environment.get(\"Earth_id\")",
+													"tests[\"title\"] = jsonData.data.title === \"Test Organization Oleh\"",
+													"tests[\"id\"] = jsonData.data.id === pm.environment.get(\"Org_id\")",
+													"tests[\"level\"] = jsonData.data.level === 1"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url}}/group/{{Org_id}}",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group",
+												"{{Org_id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Update Organization",
+							"item": [
+								{
+									"name": "Get group activity (200) copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ffc3dcfb-8c62-430a-8f0f-2ad3ddae705f",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id\", jsonData.data[0].id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Organization (201)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "24c5792a-5105-4613-9f85-5ebca5c0f910",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"tests[\"Body matches id\"] = responseBody.has(\"id\");",
+													"",
+													"tests[\"Body matches title\"] = responseBody.has(\"title\");",
+													"",
+													"tests[\"Body matches createdAt\"] = responseBody.has(\"createdAt\");",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"Org_id\", jsonData.data.id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n\"data\": \r\n{\r\n\"title\": \"Test Organization Oleh updated\",\r\n\"alertRecipients\": \"oleh.bavshyn+NEM@gmail.com\",\r\n \"tags\": [\r\n      \"org_tag\"\r\n    ]\r\n},\r\n\"hubs\": []\r\n}\r\n"
+										},
+										"url": {
+											"raw": "{{url}}/group/{{Org_id}}",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group",
+												"{{Org_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get group activity (200) verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ec404c14-6b03-47d5-894c-60540aa7efb3",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id+1\", jsonData.data[0].id);",
+													"tests[\"action\"] = jsonData.data[0].action === \"update\"",
+													"tests[\"source\"] = jsonData.data[0].source === \"admin@zenforenterprise.com\"",
+													"tests[\"title\"] = jsonData.data[0].title === \"Test Organization Oleh updated\"",
+													"tests[\"alertRecipients\"] = jsonData.data[0].alertRecipients === \"oleh.bavshyn+NEM@gmail.com\"",
+													"tests[\"tags\"] = jsonData.data[0].tags === \"org_tag\"",
+													"tests[\"id\"] = jsonData.data[0].externalId === pm.environment.get(\"Org_id\")",
+													"",
+													"",
+													"",
+													"var data1 = parseInt(pm.environment.get(\"last_action_id\"));",
+													"var data3 = data1 + 1;",
+													"var data2 = parseInt(pm.environment.get(\"last_action_id+1\"));",
+													"console.log (data1);",
+													"console.log (data3);",
+													"console.log (data2);",
+													"//if (data2 == data3)",
+													"//console.log('success');",
+													"tests[\"OK\"] = data2 == data3;",
+													"//else",
+													"//console.log('error');"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get  Org info verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3f65db-215e-4a8c-97b4-954b6f679476",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"tests[\"parentId\"] = jsonData.data.parentId === pm.environment.get(\"Earth_id\")",
+													"tests[\"title\"] = jsonData.data.title === \"Test Organization Oleh updated\"",
+													"tests[\"id\"] = jsonData.data.id === pm.environment.get(\"Org_id\")",
+													"tests[\"alertRecipients\"] = jsonData.data.alertRecipients === \"oleh.bavshyn+NEM@gmail.com\"",
+													"tests[\"tags\"] = jsonData.data.tags[0] === \"org_tag\"",
+													"tests[\"level\"] = jsonData.data.level === 1"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url}}/group/{{Org_id}}",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group",
+												"{{Org_id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Create Region",
+							"item": [
+								{
+									"name": "Get group activity (200) copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ffc3dcfb-8c62-430a-8f0f-2ad3ddae705f",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id\", jsonData.data[0].id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create Region (201)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "d1482140-e6aa-4340-8508-af5ec324b305",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 201\"] = responseCode.code === 201;",
+													"",
+													"tests[\"Body matches id\"] = responseBody.has(\"id\");",
+													"",
+													"tests[\"Body matches title\"] = responseBody.has(\"title\");",
+													"",
+													"tests[\"Body matches createdAt\"] = responseBody.has(\"createdAt\");",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"Region_id\", jsonData.data.id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n\"data\": \r\n{\r\n\"parentId\": \"{{Org_id}}\",\r\n\"title\": \"Test Region Oleh\"\r\n},\r\n\"hubs\": []\r\n}\r\n"
+										},
+										"url": {
+											"raw": "{{url}}/group",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get group activity (200) verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3b4106dc-ae15-44a2-8c50-fa481054ed48",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id+1\", jsonData.data[0].id);",
+													"tests[\"action\"] = jsonData.data[0].action === \"create\"",
+													"tests[\"source\"] = jsonData.data[0].source === \"admin@zenforenterprise.com\"",
+													"tests[\"title\"] = jsonData.data[0].title === \"Test Region Oleh\"",
+													"tests[\"id\"] = jsonData.data[0].externalId === pm.environment.get(\"Region_id\")",
+													"",
+													"",
+													"",
+													"var data1 = parseInt(pm.environment.get(\"last_action_id\"));",
+													"var data3 = data1 + 1;",
+													"var data2 = parseInt(pm.environment.get(\"last_action_id+1\"));",
+													"console.log (data1);",
+													"console.log (data3);",
+													"console.log (data2);",
+													"//if (data2 == data3)",
+													"//console.log('success');",
+													"tests[\"OK\"] = data2 == data3;",
+													"//else",
+													"//console.log('error');"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get  Region info verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "80e7af62-e496-44a5-ae39-026a2699c7de",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"tests[\"parentId\"] = jsonData.data.parentId === pm.environment.get(\"Org_id\")",
+													"tests[\"title\"] = jsonData.data.title === \"Test Region Oleh\"",
+													"tests[\"id\"] = jsonData.data.id === pm.environment.get(\"Region_id\")",
+													"tests[\"level\"] = jsonData.data.level === 2"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url}}/group/{{Region_id}}",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group",
+												"{{Region_id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Update Region",
+							"item": [
+								{
+									"name": "Get group activity (200) copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ffc3dcfb-8c62-430a-8f0f-2ad3ddae705f",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id\", jsonData.data[0].id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Region (201)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "fea12121-8a52-42ac-be2d-5ea7d0f6ddb5",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"tests[\"Body matches id\"] = responseBody.has(\"id\");",
+													"",
+													"tests[\"Body matches title\"] = responseBody.has(\"title\");",
+													"",
+													"tests[\"Body matches createdAt\"] = responseBody.has(\"createdAt\");",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"Region_id\", jsonData.data.id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n\"data\": \r\n{\r\n\"title\": \"Test Region Oleh updated\",\r\n \"tags\": [\r\n      \"region_tag\"\r\n    ]\r\n},\r\n\"hubs\": []\r\n}\r\n"
+										},
+										"url": {
+											"raw": "{{url}}/group/{{Region_id}}",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group",
+												"{{Region_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get group activity (200) verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "99919b49-5f5e-47b7-9fee-f1207bcbde5a",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id+1\", jsonData.data[0].id);",
+													"tests[\"action\"] = jsonData.data[0].action === \"update\"",
+													"tests[\"source\"] = jsonData.data[0].source === \"admin@zenforenterprise.com\"",
+													"tests[\"title\"] = jsonData.data[0].title === \"Test Region Oleh updated\"",
+													"tests[\"tags\"] = jsonData.data[0].tags === \"region_tag\"",
+													"tests[\"id\"] = jsonData.data[0].externalId === pm.environment.get(\"Region_id\")",
+													"",
+													"",
+													"",
+													"var data1 = parseInt(pm.environment.get(\"last_action_id\"));",
+													"var data3 = data1 + 1;",
+													"var data2 = parseInt(pm.environment.get(\"last_action_id+1\"));",
+													"console.log (data1);",
+													"console.log (data3);",
+													"console.log (data2);",
+													"//if (data2 == data3)",
+													"//console.log('success');",
+													"tests[\"OK\"] = data2 == data3;",
+													"//else",
+													"//console.log('error');"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Region info verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "31e89c62-fd9f-4edf-abaf-b4b2b562df4e",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"tests[\"parentId\"] = jsonData.data.parentId === pm.environment.get(\"Org_id\")",
+													"tests[\"title\"] = jsonData.data.title === \"Test Region Oleh updated\"",
+													"tests[\"id\"] = jsonData.data.id === pm.environment.get(\"Region_id\")",
+													"tests[\"tags\"] = jsonData.data.tags[0] === \"region_tag\"",
+													"tests[\"level\"] = jsonData.data.level === 2"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url}}/group/{{Region_id}}",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group",
+												"{{Region_id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Create Site",
+							"item": [
+								{
+									"name": "Get group activity (200) copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ffc3dcfb-8c62-430a-8f0f-2ad3ddae705f",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id\", jsonData.data[0].id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create Site (201)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "c6fc47a5-9836-4670-8e97-e6a74822da67",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 201\"] = responseCode.code === 201;",
+													"",
+													"tests[\"Body matches id\"] = responseBody.has(\"id\");",
+													"",
+													"tests[\"Body matches title\"] = responseBody.has(\"title\");",
+													"",
+													"tests[\"Body matches createdAt\"] = responseBody.has(\"createdAt\");",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"Site_id\", jsonData.data.id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n\"data\": \r\n{\r\n\"parentId\": \"{{Region_id}}\",\r\n\"title\": \"Test Site Oleh\",\r\n\"utcOffset\": -420,\r\n\"location\": {\r\n\"address\": \"California, USA\",\r\n\"country\": \"US\",\r\n\"lat\": 36.778261,\r\n\"lng\": -119.41793239999998,\r\n\"state\": \"CA\",\r\n\"utc_offset\": -480\r\n}\r\n},\r\n\"hubs\": []\r\n}\r\n"
+										},
+										"url": {
+											"raw": "{{url}}/group",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get group activity (200) verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "357af92f-b627-419f-82cb-3dcae203a8e3",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id+1\", jsonData.data[0].id);",
+													"tests[\"action\"] = jsonData.data[0].action === \"create\"",
+													"tests[\"source\"] = jsonData.data[0].source === \"admin@zenforenterprise.com\"",
+													"tests[\"title\"] = jsonData.data[0].title === \"Test Site Oleh\"",
+													"tests[\"id\"] = jsonData.data[0].externalId === pm.environment.get(\"Site_id\")",
+													"",
+													"",
+													"",
+													"var data1 = parseInt(pm.environment.get(\"last_action_id\"));",
+													"var data3 = data1 + 1;",
+													"var data2 = parseInt(pm.environment.get(\"last_action_id+1\"));",
+													"console.log (data1);",
+													"console.log (data3);",
+													"console.log (data2);",
+													"//if (data2 == data3)",
+													"//console.log('success');",
+													"tests[\"OK\"] = data2 == data3;",
+													"//else",
+													"//console.log('error');"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get  Site info verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "2d89fc70-7875-4d7e-bb81-c0f2c11aac6f",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"tests[\"parentId\"] = jsonData.data.parentId === pm.environment.get(\"Region_id\")",
+													"tests[\"title\"] = jsonData.data.title === \"Test Site Oleh\"",
+													"tests[\"id\"] = jsonData.data.id === pm.environment.get(\"Site_id\")",
+													"tests[\"level\"] = jsonData.data.level === 3"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url}}/group/{{Site_id}}",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group",
+												"{{Site_id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Update Site",
+							"item": [
+								{
+									"name": "Get group activity (200) copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ffc3dcfb-8c62-430a-8f0f-2ad3ddae705f",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id\", jsonData.data[0].id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Site (201)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "2e9b3fc5-a3e8-4877-8739-6f0b0db57cae",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"tests[\"Body matches id\"] = responseBody.has(\"id\");",
+													"",
+													"tests[\"Body matches title\"] = responseBody.has(\"title\");",
+													"",
+													"tests[\"Body matches createdAt\"] = responseBody.has(\"createdAt\");",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"Site_id\", jsonData.data.id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n\"data\": \r\n{\r\n\"title\": \"Test Site Oleh updated\",\r\n\"location\": {\r\n\"address\": \"Melbourne Airport VIC 3045, Australia\",\r\n\"country\": \"AU\",\r\n\"lat\": -37.6697377,\r\n\"lng\": 144.8488148,\r\n\"state\": \"VIC\",\r\n\"utc_offset\": 600\r\n},\r\n \"tags\": [\r\n      \"site_tag\"\r\n    ]\r\n},\r\n\"hubs\": []\r\n}\r\n\r\n\r\n"
+										},
+										"url": {
+											"raw": "{{url}}/group/{{Site_id}}",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group",
+												"{{Site_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get group activity (200) verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "2baccf1c-69dd-4466-b3bd-102bf05ee537",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id+1\", jsonData.data[0].id);",
+													"tests[\"action\"] = jsonData.data[0].action === \"update\"",
+													"tests[\"source\"] = jsonData.data[0].source === \"admin@zenforenterprise.com\"",
+													"tests[\"title\"] = jsonData.data[0].title === \"Test Site Oleh updated\"",
+													"tests[\"tags\"] = jsonData.data[0].tags === \"site_tag\"",
+													"tests[\"id\"] = jsonData.data[0].externalId === pm.environment.get(\"Site_id\")",
+													"",
+													"",
+													"",
+													"var data1 = parseInt(pm.environment.get(\"last_action_id\"));",
+													"var data3 = data1 + 1;",
+													"var data2 = parseInt(pm.environment.get(\"last_action_id+1\"));",
+													"console.log (data1);",
+													"console.log (data3);",
+													"console.log (data2);",
+													"//if (data2 == data3)",
+													"//console.log('success');",
+													"tests[\"OK\"] = data2 == data3;",
+													"//else",
+													"//console.log('error');"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Site info verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "d0ff80b6-727e-4e56-b5af-b5663907580d",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"tests[\"parentId\"] = jsonData.data.parentId === pm.environment.get(\"Region_id\")",
+													"tests[\"title\"] = jsonData.data.title === \"Test Site Oleh updated\"",
+													"tests[\"id\"] = jsonData.data.id === pm.environment.get(\"Site_id\")",
+													"tests[\"tags\"] = jsonData.data.tags[0] === \"site_tag\"",
+													"tests[\"level\"] = jsonData.data.level === 3"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url}}/group/{{Site_id}}",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group",
+												"{{Site_id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "246687de-0502-4b42-bf2b-ce798f8261ef",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "18c6f9db-bd38-4df4-8c00-7bb9e08845f8",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Create Group",
+							"item": [
+								{
+									"name": "Get group activity (200) copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ffc3dcfb-8c62-430a-8f0f-2ad3ddae705f",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id\", jsonData.data[0].id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create Group (201)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "4f3b706c-0d2f-45dd-b779-7e31246ace0f",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 201\"] = responseCode.code === 201;",
+													"",
+													"tests[\"Body matches id\"] = responseBody.has(\"id\");",
+													"",
+													"tests[\"Body matches title\"] = responseBody.has(\"title\");",
+													"",
+													"tests[\"Body matches createdAt\"] = responseBody.has(\"createdAt\");",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"Group_id\", jsonData.data.id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n\"data\": \r\n{\r\n\"parentId\": \"{{Site_id}}\",\r\n\"title\": \"Test Group Oleh\"\r\n}\r\n}\r\n"
+										},
+										"url": {
+											"raw": "{{url}}/group",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get group activity (200) verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "603c6265-210c-43c1-ae1a-0e3ef25c2983",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id+1\", jsonData.data[0].id);",
+													"tests[\"action\"] = jsonData.data[0].action === \"create\"",
+													"tests[\"source\"] = jsonData.data[0].source === \"admin@zenforenterprise.com\"",
+													"tests[\"title\"] = jsonData.data[0].title === \"Test Group Oleh\"",
+													"tests[\"id\"] = jsonData.data[0].externalId === pm.environment.get(\"Group_id\")",
+													"",
+													"",
+													"",
+													"var data1 = parseInt(pm.environment.get(\"last_action_id\"));",
+													"var data3 = data1 + 1;",
+													"var data2 = parseInt(pm.environment.get(\"last_action_id+1\"));",
+													"console.log (data1);",
+													"console.log (data3);",
+													"console.log (data2);",
+													"//if (data2 == data3)",
+													"//console.log('success');",
+													"tests[\"OK\"] = data2 == data3;",
+													"//else",
+													"//console.log('error');"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get  Group info verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "76a7ff4e-7a8b-4587-add9-dfc9f738eef4",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"tests[\"parentId\"] = jsonData.data.parentId === pm.environment.get(\"Site_id\")",
+													"tests[\"title\"] = jsonData.data.title === \"Test Group Oleh\"",
+													"tests[\"id\"] = jsonData.data.id === pm.environment.get(\"Group_id\")",
+													"tests[\"level\"] = jsonData.data.level === 4"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url}}/group/{{Group_id}}",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group",
+												"{{Group_id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Update Group",
+							"item": [
+								{
+									"name": "Get group activity (200) copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ffc3dcfb-8c62-430a-8f0f-2ad3ddae705f",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id\", jsonData.data[0].id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Group (201)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "cc868c88-e806-4d24-bea7-19675b21c3c0",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"tests[\"Body matches id\"] = responseBody.has(\"id\");",
+													"",
+													"tests[\"Body matches title\"] = responseBody.has(\"title\");",
+													"",
+													"tests[\"Body matches createdAt\"] = responseBody.has(\"createdAt\");",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"Group_id\", jsonData.data.id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n\"data\": \r\n{\r\n\"title\": \"Test Group Oleh updated\",\r\n \"tags\": [\r\n      \"group_tag\"\r\n    ]\r\n},\r\n\"hubs\": []\r\n}\r\n"
+										},
+										"url": {
+											"raw": "{{url}}/group/{{Group_id}}",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group",
+												"{{Group_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get group activity (200) verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "bd490c16-a55c-48b4-af2d-825c8a81cf55",
+												"type": "text/javascript",
+												"exec": [
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"last_action_id+1\", jsonData.data[0].id);",
+													"tests[\"action\"] = jsonData.data[0].action === \"update\"",
+													"tests[\"source\"] = jsonData.data[0].source === \"admin@zenforenterprise.com\"",
+													"tests[\"title\"] = jsonData.data[0].title === \"Test Group Oleh updated\"",
+													"tests[\"tags\"] = jsonData.data[0].tags === \"group_tag\"",
+													"tests[\"id\"] = jsonData.data[0].externalId === pm.environment.get(\"Group_id\")",
+													"",
+													"",
+													"",
+													"var data1 = parseInt(pm.environment.get(\"last_action_id\"));",
+													"var data3 = data1 + 1;",
+													"var data2 = parseInt(pm.environment.get(\"last_action_id+1\"));",
+													"console.log (data1);",
+													"console.log (data3);",
+													"console.log (data2);",
+													"//if (data2 == data3)",
+													"//console.log('success');",
+													"tests[\"OK\"] = data2 == data3;",
+													"//else",
+													"//console.log('error');"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer xxx"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url_historical}}GroupActivity/?limit=100",
+											"host": [
+												"{{url_historical}}GroupActivity"
+											],
+											"path": [
+												""
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Group info verification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "1009a011-addc-4112-80d0-c31e0acca8a6",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"var jsonData = JSON.parse(responseBody);",
+													"tests[\"parentId\"] = jsonData.data.parentId === pm.environment.get(\"Site_id\")",
+													"tests[\"title\"] = jsonData.data.title === \"Test Group Oleh updated\"",
+													"tests[\"id\"] = jsonData.data.id === pm.environment.get(\"Group_id\")",
+													"tests[\"tags\"] = jsonData.data.tags[0] === \"group_tag\"",
+													"tests[\"level\"] = jsonData.data.level === 4"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "{{url}}/group/{{Group_id}}",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"group",
+												"{{Group_id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "defe6d58-37bc-4f0e-bbec-4f72c718c96e",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "32d3448c-2c9f-4c01-88ea-fe7865f57e4e",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"_postman_isSubFolder": true
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "73086a54-3034-4e2d-9459-4bf6f7679d31",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86bdc987-75b3-44ad-80ae-2ce8b3339b5e",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Attach hub to Groups",
+					"item": [
+						{
+							"name": "Get hub activity (200)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "1356988c-02bb-459a-8735-977078a97481",
+										"type": "text/javascript",
+										"exec": [
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"",
+											"var jsonData = JSON.parse(responseBody);",
+											"postman.setEnvironmentVariable(\"last_action_id\", jsonData.data[0].id);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer xxx"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{url_historical}}HubActivity/?limit=100",
+									"host": [
+										"{{url_historical}}HubActivity"
+									],
+									"path": [
+										""
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "100"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Attach hub to Organization",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9946dd25-1c33-433d-8c5b-c8aeb74e6a02",
+										"type": "text/javascript",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"var jsonData = JSON.parse(responseBody);",
+											"tests[\"hubs\"] = jsonData.data.hubs[0] === \"251176216347924\""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\"data\": \n{\n\"title\": \"Test Organization Oleh\",\n\"hubs\": [\"251176216347924\"]\n}\n}"
+								},
+								"url": {
+									"raw": "{{url}}/group/{{Org_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"group",
+										"{{Org_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Attach hub to Region",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9946dd25-1c33-433d-8c5b-c8aeb74e6a02",
+										"type": "text/javascript",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"var jsonData = JSON.parse(responseBody);",
+											"tests[\"hubs\"] = jsonData.data.hubs[0] === \"251176216347924\""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\"data\": \n{\n\"title\": \"Test Region Oleh\",\n\"hubs\": [\"251176216347924\"]\n}\n}"
+								},
+								"url": {
+									"raw": "{{url}}/group/{{Region_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"group",
+										"{{Region_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Attach hub to Site",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9946dd25-1c33-433d-8c5b-c8aeb74e6a02",
+										"type": "text/javascript",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"var jsonData = JSON.parse(responseBody);",
+											"tests[\"hubs\"] = jsonData.data.hubs[0] === \"251176216347924\""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\"data\": \n{\n\"title\": \"Test Site Oleh\",\n\"hubs\": [\"251176216347924\"]\n}\n}"
+								},
+								"url": {
+									"raw": "{{url}}/group/{{Site_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"group",
+										"{{Site_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get hub activity (200) verification",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6a088e69-3259-4f27-a597-3c583ab9dda5",
+										"type": "text/javascript",
+										"exec": [
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"",
+											"var jsonData = JSON.parse(responseBody);",
+											"postman.setEnvironmentVariable(\"last_action_id+1\", jsonData.data[0].id);",
+											"tests[\"action\"] = jsonData.data[0].action === \"update\"",
+											"tests[\"source\"] = jsonData.data[0].source === \"device-worker-HubState\"",
+											"tests[\"title\"] = jsonData.data[0].name === \"Test Site Oleh - 6C514\"",
+											"tests[\"id\"] = jsonData.data[0].macAddress === \"251176216347924\"",
+											"",
+											"var data1 = parseInt(pm.environment.get(\"last_action_id\"));",
+											"var data3 = data1 + 1;",
+											"var data2 = parseInt(pm.environment.get(\"last_action_id+1\"));",
+											"console.log (data1);",
+											"console.log (data3);",
+											"console.log (data2);",
+											"//if (data2 == data3)",
+											"//console.log('success');",
+											"tests[\"OK\"] = data2 == data3;",
+											"//else",
+											"//console.log('error');"
+										]
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "191ba90a-1b1c-433e-961d-d087dcb2f268",
+										"type": "text/javascript",
+										"exec": [
+											"  setTimeout(checkStatusCode, 60000);",
+											"",
+											"    function checkStatusCode() {",
+											"",
+											"        pm.sendRequest('https://postman-echo.com/get', function (err, res) {",
+											" ",
+											"            tests['status code should be 200'] = res.code === 200;",
+											"",
+											"        });",
+											"    }"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer xxx"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{url_historical}}HubActivity/?limit=100",
+									"host": [
+										"{{url_historical}}HubActivity"
+									],
+									"path": [
+										""
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "100"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			]
+		}
+	]
+}
